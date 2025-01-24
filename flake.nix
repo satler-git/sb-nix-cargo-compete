@@ -57,7 +57,6 @@
             pname = "cargo-compete";
             inherit (self'.packages.cargo-compete-unwrapped) version meta;
 
-            # buildInputs = [ self'.packages.cargo-compete-unwrapped ];
             nativeBuildInputs = with pkgs; [
               makeWrapper
             ];
