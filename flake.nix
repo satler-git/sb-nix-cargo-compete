@@ -75,9 +75,9 @@
                     ]
                   )
                 } \
-                --suffix PATH : \$HOME/.cache/cargo-compete/rustup/bin \
-                --set-default RUSTUP_HOME \$HOME/.cache/cargo-compete/rustup \
-                --set-default CARGO_HOME \$HOME/.cache/cargo-compete/rustup
+                --run 'export PATH=$PATH:"$HOME/.cache/cargo-compete/rustup/bin"' \
+                --run 'export RUSTUP_HOME=''${RUSTUP_HOME-"$HOME/.cache/cargo-compete/rustup"}' \
+                --run 'export CARGO_HOME=''${CARGO_HOME-"$HOME/.cache/cargo-compete/rustup"}' \
             '';
           };
 
