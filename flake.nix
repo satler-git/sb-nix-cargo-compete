@@ -70,7 +70,7 @@
                   lib.makeBinPath (
                     with pkgs;
                     [
-                      rustup
+                      self'.packages.wrapped-rustup
                       gcc # いらないかも
                     ]
                   )
@@ -78,6 +78,37 @@
                 --suffix PATH : \$HOME/.cache/cargo-compete/rustup/bin \
                 --set-default RUSTUP_HOME \$HOME/.cache/cargo-compete/rustup \
                 --set-default CARGO_HOME \$HOME/.cache/cargo-compete/rustup
+            '';
+          };
+
+          # 普通のrustupは自動でランタイムをインストールしないからユーザーがコマンドを打つ必要があるけど、rustupにアクセスできないから、
+          # rustupを自動的にランタイムをインストールするようにwrapする
+          packages.wrapped-rustup = pkgs.writeShellApplication {
+            name = "rustup";
+
+            runtimeInputs = with pkgs; [
+              rustup
+            ];
+
+            # $2がrunの場合に--installを$2と$3の間に付ける
+            text = ''
+              if [ "''${1:-}" = "run" ]; then
+                # Shift the first argument (removing 'run')
+                command=$1
+                shift
+
+                # Ensure $2 and $3 exist
+                if [ $# -ge 3 ]; then
+                  # Insert --install between $2 and $3
+                  new_args=("$command" "$1" "--install" "$2" "$3" "''${@:4}")
+                  rustup "''${new_args[@]}"
+                else
+                  echo "Error: Missing required arguments for --install insertion."
+                  exit 1
+                fi
+              else
+                rustup "$@"
+              fi
             '';
           };
 
